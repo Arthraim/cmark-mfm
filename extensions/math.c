@@ -186,11 +186,12 @@ int math_ispunct(char c) {
   }
 }
 
-int find_backslash_index(const unsigned char *str) {
+int find_math_closer(const unsigned char *str) {
     const unsigned char *ptr = str;
     int index = 0;
     while (*ptr != '\0' && *ptr != '\n') {
-        if (*ptr == '\\') {
+        if ((*ptr == '\\' && *(ptr + 1) == ']') || (*ptr == '\\' && *(ptr + 1) == ')')) {
+            // Found a backslash followed by ']'
             return index;
         }
         ptr++;
@@ -222,7 +223,7 @@ static cmark_node *matches_inline(cmark_syntax_extension *self, cmark_parser *pa
   // 1. scan for the end of the math
   cmark_chunk *chunk = cmark_inline_parser_get_chunk(inline_parser);
   int offset = cmark_inline_parser_get_offset(inline_parser);
-  int end_offset = find_backslash_index(chunk->data + offset);
+  int end_offset = find_math_closer(chunk->data + offset);
   char next_char = cmark_inline_parser_peek_at(inline_parser, offset + end_offset + 1);
   if (end_offset < 0 || !(next_char == ']' || next_char == ')')) {
     return NULL;
@@ -230,7 +231,18 @@ static cmark_node *matches_inline(cmark_syntax_extension *self, cmark_parser *pa
   int lower_bound = offset;
   int upper_bound = offset + end_offset; // not inclusive
 
-  // 2. if found, handle start bracket and parenthesis
+  // 2. if found end, check start \[ or \(
+  cmark_node *prev;
+  if (in_bracket) {
+    prev = parent->last_child->prev;
+  }
+  if (in_parenthesis) {
+    prev = parent->last_child;
+  }
+  if (prev == NULL || !(prev->as.literal.len == 1 && prev->as.literal.data[0] == '\\')) {
+    return NULL;
+  }
+  // handle start, remove the '\' before bracket or parenthesis
   if (in_bracket) {
     cmark_inline_parser_free_last_bracket(inline_parser);
     cmark_inline_parser_pop_bracket(inline_parser);
@@ -239,7 +251,7 @@ static cmark_node *matches_inline(cmark_syntax_extension *self, cmark_parser *pa
     cmark_inline_parser_advance_offset(inline_parser);
     lower_bound++;
   }
-  cmark_node_free(parent->last_child); // remove the '\' before bracket or parenthesis
+  cmark_node_free(parent->last_child);
 
   // 3. create a new node and return it
   char substring[upper_bound - lower_bound + 1];
