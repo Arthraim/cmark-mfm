@@ -211,7 +211,6 @@ static cmark_node *matches_inline(cmark_syntax_extension *self, cmark_parser *pa
     cmark_parser_set_backslash_ispunct_func(parser, math_ispunct);
   }
 
-  printf("%c\n", character);
   bool in_bracket = cmark_inline_parser_in_bracket(inline_parser, 0)
                     || cmark_inline_parser_in_bracket(inline_parser, 1)
                     || cmark_inline_parser_in_bracket(inline_parser, 2); /*[*/ 
