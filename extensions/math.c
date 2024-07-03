@@ -13,6 +13,14 @@
 cmark_node_type CMARK_NODE_MATH_BLOCK;
 cmark_node_type CMARK_NODE_MATH;
 
+int math_ispunct(char c) {
+  if (c == '[' || c == ']' || c == '(' || c == ')') {
+    return false;
+  } else {
+    return cmark_ispunct(c);
+  }
+}
+
 static void scan_math_start_or_end(unsigned char *input, bufsize_t len, bufsize_t *start_offset, bufsize_t *end_offset) {
   bufsize_t start = scan_math_start(input, len, 0);
   bufsize_t end = scan_math_end(input, len, start);
@@ -67,6 +75,12 @@ static cmark_node *open_math_block(cmark_syntax_extension *self,
                                   int indented, cmark_parser *parser,
                                   cmark_node *parent_container,
                                   unsigned char *input, int len) {
+  // For the first time this method got invoked, we hijack the backslash_ispunct function,
+  // because we don't what `\[` to be escaped to `[`.
+  if (parser->backslash_ispunct == NULL) {
+    cmark_parser_set_backslash_ispunct_func(parser, math_ispunct);
+  }
+
   cmark_node *container = parent_container;
   while (container) {
     cmark_node_type parent_type = cmark_node_get_type(container);
@@ -176,14 +190,6 @@ cmark_syntax_extension *create_math_block_extension(void) {
 // Inline math
 //
 
-int math_ispunct(char c) {
-  if (c == '[' || c == ']' || c == '(' || c == ')') {
-    return false;
-  } else {
-    return cmark_ispunct(c);
-  }
-}
-
 int find_math_closer(const unsigned char *str) {
     const unsigned char *ptr = str;
     int index = 0;
@@ -201,14 +207,6 @@ int find_math_closer(const unsigned char *str) {
 static cmark_node *matches_inline(cmark_syntax_extension *self, cmark_parser *parser,
                                   cmark_node *parent, unsigned char character,
                                   cmark_inline_parser *inline_parser) {
-
-  // For the first time call this method, we need to set the backslash_ispunct function,
-  // because we don't what to consider '[', ']', '(' and ')' as punctuations.
-  // Known issue: if the whole document starts with \[ or \(, which is a inline math,
-  //              then the first math will be ignored.
-  if (parser->backslash_ispunct == NULL) {
-    cmark_parser_set_backslash_ispunct_func(parser, math_ispunct);
-  }
 
   bool in_bracket = cmark_inline_parser_in_bracket(inline_parser, 0)
                     || cmark_inline_parser_in_bracket(inline_parser, 1)
