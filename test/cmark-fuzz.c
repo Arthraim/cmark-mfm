@@ -12,6 +12,7 @@ const char *extension_names[] = {
   "math",
   "table",
   "tagfilter",
+  "customtag",
   NULL,
 };
 

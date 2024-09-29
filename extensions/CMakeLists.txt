@@ -10,7 +10,8 @@ add_library(libcmark-gfm-extensions
   math.c
   table.c
   tagfilter.c
-  tasklist.c)
+  tasklist.c
+  customtag.c)
 target_compile_definitions(libcmark-gfm-extensions PUBLIC
   $<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:CMARK_GFM_STATIC_DEFINE>)
 target_include_directories(libcmark-gfm-extensions PUBLIC

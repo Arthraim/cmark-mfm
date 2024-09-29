@@ -526,6 +526,18 @@ CMARK_GFM_EXPORT int cmark_node_get_end_line(cmark_node *node);
  */
 CMARK_GFM_EXPORT int cmark_node_get_end_column(cmark_node *node);
 
+/** Returns the tag name of a custom 'node', or an empty string
+    if no tag name is set.  Returns NULL if called on a node that is
+    not a custom tag.
+ */
+CMARK_GFM_EXPORT const char *cmark_node_get_custom_tag_tagname(cmark_node *node);
+
+/** Returns the content of a custom 'node', or an empty string
+    if no content is set.  Returns NULL if called on a node that is
+    not a custom tag.
+ */
+CMARK_GFM_EXPORT const char *cmark_node_get_custom_tag_content(cmark_node *node);
+
 /**
  * ## Tree Manipulation
  */

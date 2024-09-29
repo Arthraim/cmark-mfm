@@ -35,6 +35,7 @@ EXTENSIONS = (
   'strikethrough',
   'ragtag',
   'refhighlight',
+  'customtag',
   'math',
   'tagfilter',
   )

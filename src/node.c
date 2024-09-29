@@ -899,6 +899,20 @@ int cmark_node_get_end_column(cmark_node *node) {
   return node->end_column;
 }
 
+const char *cmark_node_get_custom_tag_tagname(cmark_node *node) {
+  if (node == NULL) {
+    return NULL;
+  }
+  return cmark_chunk_to_cstr(NODE_MEM(node), &node->as.custom_tag.tagname);
+}
+
+const char *cmark_node_get_custom_tag_content(cmark_node *node) {
+  if (node == NULL) {
+    return NULL;
+  }
+  return cmark_chunk_to_cstr(NODE_MEM(node), &node->as.custom_tag.content);
+}
+
 // Unlink a node without adjusting its next, prev, and parent pointers.
 static void S_node_unlink(cmark_node *node) {
   if (node == NULL) {

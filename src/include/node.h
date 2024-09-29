@@ -53,6 +53,11 @@ typedef struct {
   cmark_chunk on_exit;
 } cmark_custom;
 
+typedef struct {
+  cmark_chunk tagname;
+  cmark_chunk content;
+} cmark_custom_tag;
+
 enum cmark_node__internal_flags {
   CMARK_NODE__OPEN = (1 << 0),
   CMARK_NODE__LAST_LINE_BLANK = (1 << 1),
@@ -111,6 +116,7 @@ struct cmark_node {
     cmark_link link;
     cmark_attribute attribute;
     cmark_custom custom;
+    cmark_custom_tag custom_tag;
     int html_block_type;
     void *opaque;
   } as;

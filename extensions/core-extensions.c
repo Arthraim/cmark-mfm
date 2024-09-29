@@ -9,6 +9,7 @@
 #include "table.h"
 #include "tagfilter.h"
 #include "tasklist.h"
+#include "customtag.h"
 #include "registry.h"
 #include "plugin.h"
 
@@ -23,6 +24,7 @@ static int core_extensions_registration(cmark_plugin *plugin) {
   cmark_plugin_register_syntax_extension(plugin, create_autolink_extension());
   cmark_plugin_register_syntax_extension(plugin, create_tagfilter_extension());
   cmark_plugin_register_syntax_extension(plugin, create_tasklist_extension());
+  cmark_plugin_register_syntax_extension(plugin, create_customtag_extension());
   return 1;
 }
 
