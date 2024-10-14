@@ -8,22 +8,27 @@
 
 cmark_node_type CMARK_NODE_CUSTOMTAG;
 
-// Define the function pointer type
-typedef const char** (*get_supported_tags_func)(void);
+// // Define the function pointer type
+// typedef const char** (*get_supported_tags_func)(void);
 
-// Static variable to hold the function pointer
-static get_supported_tags_func get_supported_tags = NULL;
+// // Static variable to hold the function pointer
+// static get_supported_tags_func get_supported_tags = NULL;
 
-// Function to dynamically load the getter function
-static void load_supported_tags_getter(void) {
-    if (get_supported_tags == NULL) {
-        // Try to find the function in the main executable
-        void *handle = dlopen(NULL, RTLD_LAZY);
-        if (handle != NULL) {
-            get_supported_tags = (get_supported_tags_func)dlsym(handle, "get_supported_tags");
-            dlclose(handle);
-        }
-    }
+// // Function to dynamically load the getter function
+// static void load_supported_tags_getter(void) {
+//     if (get_supported_tags == NULL) {
+//         // Try to find the function in the main executable
+//         void *handle = dlopen(NULL, RTLD_LAZY);
+//         if (handle != NULL) {
+//             get_supported_tags = (get_supported_tags_func)dlsym(handle, "get_supported_tags");
+//             dlclose(handle);
+//         }
+//     }
+// }
+
+static const char **get_supported_tags(void) {
+    static const char *tags[] = {"INSERT_IMAGE", NULL};
+    return tags;
 }
 
 static const char *get_type_string(cmark_syntax_extension *extension, cmark_node *node) {
@@ -113,7 +118,7 @@ static cmark_node *match(cmark_syntax_extension *self, cmark_parser *parser, cma
     if (input_char != '<') {
         return NULL;
     }
-    load_supported_tags_getter();
+//    load_supported_tags_getter();
 
     if (!get_supported_tags) {
         return NULL;
