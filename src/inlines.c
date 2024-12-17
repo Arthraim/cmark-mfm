@@ -1607,6 +1607,15 @@ static int parse_inline(cmark_parser *parser, subject *subj, cmark_node *parent,
   if (c == 0) {
     return 0;
   }
+
+  if (!new_inl) {
+    new_inl = try_extensions(parser, parent, c, subj);
+    if (new_inl != NULL) {
+      append_child(parent, new_inl);
+      return 1;
+    }
+  }
+
   switch (c) {
   case '\r':
   case '\n':
