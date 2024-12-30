@@ -373,6 +373,11 @@ CMARK_GFM_EXPORT int cmark_node_get_backtick_count(cmark_node *node);
  */
 CMARK_GFM_EXPORT int cmark_node_set_literal(cmark_node *node, const char *content);
 
+/** Sets the string contents of 'node'.  Returns 1 on success,
+ * 0 on failure.
+ */
+CMARK_GFM_EXPORT int cmark_node_set_literal_with_len(cmark_node *node, const char *content, size_t len);
+
 /** Returns the heading level of 'node', or 0 if 'node' is not a heading.
  */
 CMARK_GFM_EXPORT int cmark_node_get_heading_level(cmark_node *node);

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "chunk.h"
+#include "cmark-gfm.h"
 #include "mutex.h"
 #include "node.h"
 #include "syntax_extension.h"
@@ -434,7 +436,7 @@ int cmark_node_get_backtick_count(cmark_node *node) {
   return node->backtick_count;
 }
 
-int cmark_node_set_literal(cmark_node *node, const char *content) {
+int cmark_node_set_literal_with_len(cmark_node *node, const char *content, size_t len) {
   if (node == NULL) {
     return 0;
   }
@@ -445,11 +447,11 @@ int cmark_node_set_literal(cmark_node *node, const char *content) {
   case CMARK_NODE_HTML_INLINE:
   case CMARK_NODE_CODE:
   case CMARK_NODE_FOOTNOTE_REFERENCE:
-    cmark_chunk_set_cstr(NODE_MEM(node), &node->as.literal, content);
+    cmark_chunk_set_cstr_with_len(NODE_MEM(node), &node->as.literal, content, (bufsize_t)len);
     return 1;
 
   case CMARK_NODE_CODE_BLOCK:
-    cmark_chunk_set_cstr(NODE_MEM(node), &node->as.code.literal, content);
+    cmark_chunk_set_cstr_with_len(NODE_MEM(node), &node->as.code.literal, content, (bufsize_t)len);
     return 1;
 
   default:
@@ -457,6 +459,10 @@ int cmark_node_set_literal(cmark_node *node, const char *content) {
   }
 
   return 0;
+}
+
+int cmark_node_set_literal(cmark_node *node, const char *content) {
+  return cmark_node_set_literal_with_len(node, content, content ? (bufsize_t)strlen(content) : 0);
 }
 
 const char *cmark_node_get_string_content(cmark_node *node) {

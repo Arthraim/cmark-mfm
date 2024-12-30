@@ -44,3 +44,4 @@ test/afl_results/
 # Build directories for SwiftPM and Xcode
 .swiftpm
 .build
+.cache
