@@ -246,7 +246,7 @@ static cmark_node *found_math_match(cmark_syntax_extension *self,
   cmark_node *text = cmark_node_new_with_mem(CMARK_NODE_TEXT, parser->mem);
   int content_len = closer_offset - opener_len;
   cmark_strbuf_set(&text->content, string + opener_len, content_len);
-  cmark_node_set_literal_with_len(text, string + opener_len, content_len);
+  cmark_node_set_literal_with_len(text, (const char*)string + opener_len, content_len);
   text->start_line = text->end_line =
       cmark_inline_parser_get_line(inline_parser);
   text->start_column = cmark_inline_parser_get_column(inline_parser);
