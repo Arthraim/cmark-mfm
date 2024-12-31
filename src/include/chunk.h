@@ -1,15 +1,14 @@
 #ifndef CMARK_CHUNK_H
 #define CMARK_CHUNK_H
 
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include "cmark-gfm.h"
 #include "buffer.h"
+#include "cmark-gfm.h"
 #include "cmark_ctype.h"
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
-#define CMARK_CHUNK_EMPTY                                                      \
-  { NULL, 0, 0 }
+#define CMARK_CHUNK_EMPTY {NULL, 0, 0}
 
 typedef struct cmark_chunk {
   unsigned char *data;
@@ -75,15 +74,15 @@ static inline const char *cmark_chunk_to_cstr(cmark_mem *mem, cmark_chunk *c) {
   return (char *)str;
 }
 
-static inline void cmark_chunk_set_cstr(cmark_mem *mem, cmark_chunk *c,
-                                        const char *str) {
+static inline void cmark_chunk_set_cstr_with_len(cmark_mem *mem, cmark_chunk *c,
+                                                 const char *str, bufsize_t len) {
   unsigned char *old = c->alloc ? c->data : NULL;
   if (str == NULL) {
     c->len = 0;
     c->data = NULL;
     c->alloc = 0;
   } else {
-    c->len = (bufsize_t)strlen(str);
+    c->len = len;
     c->data = (unsigned char *)mem->calloc(c->len + 1, 1);
     c->alloc = 1;
     memcpy(c->data, str, c->len + 1);
@@ -91,6 +90,11 @@ static inline void cmark_chunk_set_cstr(cmark_mem *mem, cmark_chunk *c,
   if (old != NULL) {
     mem->free(old);
   }
+}
+
+static inline void cmark_chunk_set_cstr(cmark_mem *mem, cmark_chunk *c,
+                                        const char *str) {
+  cmark_chunk_set_cstr_with_len(mem, c, str, str ? (bufsize_t)strlen(str) : 0);
 }
 
 static inline cmark_chunk cmark_chunk_literal(const char *data) {
@@ -117,14 +121,16 @@ static inline cmark_chunk cmark_chunk_buf_detach(cmark_strbuf *buf) {
 
 /* trim_new variants are to be used when the source chunk may or may not be
  * allocated; forces a newly allocated chunk. */
-static inline cmark_chunk cmark_chunk_ltrim_new(cmark_mem *mem, cmark_chunk *c) {
+static inline cmark_chunk cmark_chunk_ltrim_new(cmark_mem *mem,
+                                                cmark_chunk *c) {
   cmark_chunk r = cmark_chunk_dup(c, 0, c->len);
   cmark_chunk_ltrim(&r);
   cmark_chunk_to_cstr(mem, &r);
   return r;
 }
 
-static inline cmark_chunk cmark_chunk_rtrim_new(cmark_mem *mem, cmark_chunk *c) {
+static inline cmark_chunk cmark_chunk_rtrim_new(cmark_mem *mem,
+                                                cmark_chunk *c) {
   cmark_chunk r = cmark_chunk_dup(c, 0, c->len);
   cmark_chunk_rtrim(&r);
   cmark_chunk_to_cstr(mem, &r);
